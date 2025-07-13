@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>TS MODS- Login</title>
+  <style>
+    body { margin:0; padding:0; font-family: Arial; background: linear-gradient(90deg,#39FF14,#006400); display:flex; justify-content:center; align-items:center; height:100vh; color:white; }
+    .screen { display:none; background:rgba(0,0,0,0.8); padding:20px; border:1px solid lightgreen; border-radius:10px; text-align:center; width:320px; }
+    .active { display:block; }
+    input, button { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid lightgreen; background:black; color:white; }
+    button { background:green; cursor:pointer; }
+    button:hover { background:darkgreen; }
+    .qr-box img { width:200px; margin:10px 0; }
+    .secret { background:#222; color:#0ff; padding:10px; border-radius:5px; margin-top:15px; text-align:left; }
+  </style>
+</head>
+<body>
+  <div class="screen active" id="loginScreen">
+    <h1>LOL CRACKER</h1>
+    <input type="password" id="keyInput" placeholder="Enter Paid Key (TSBHAI)"/>
+    <button onclick="validate()">VALIDATE</button>
+    <div class="secret" id="loginSecret">Loading...</div>
+  </div>
+
+  <div class="screen" id="qrScreen">
+    <h2>Pay ₹2,000</h2>
+    <div class="qr-box">
+      <img src="qrcodee.png" alt="Pay QR"/>
+    </div>
+    <p>To unlock the mod, please pay ₹2,000.<br><b>Mod works on a 2‑Level Basis.</b></p>
+    <div class="secret" id="qrSecret">Loading...</div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnG_OGEo0IKkIMKwRYyPm6l_hwNPr_C-I",
+      authDomain: "integra-fb61b.firebaseapp.com",
+      databaseURL: "https://integra-fb61b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "integra-fb61b",
+      storageBucket: "integra-fb61b.firebasestorage.app"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let modCache = { status: "NOT_CONNECTED", secret: "" };
+
+    db.ref("mod_status").on("value", snap => {
+      modCache.status = snap.val() || "NOT_CONNECTED";
+      showSecret();
+    });
+    db.ref("secret_text").on("value", snap => {
+      modCache.secret = snap.val() || "";
+      showSecret();
+    });
+
+    function showSecret() {
+      const txt = modCache.secret;
+      document.getElementById("loginSecret").innerText = txt;
+      document.getElementById("qrSecret").innerText = txt;
+    }
+
+    function validate() {
+      const key = document.getElementById("keyInput").value.trim();
+      if (key !== "TSBHAI") return alert("Wrong key! Contact support.");
+
+      if (modCache.status === "CONNECTED") {
+        alert("✅ Access granted! Loading mod...");
+        // window.location = "mod.html"; // Redirect to your mod HTML
+      } else {
+        document.getElementById("loginScreen").classList.remove("active");
+        document.getElementById("qrScreen").classList.add("active");
+      }
+    }
+  </script>
+</body>
+</html>
